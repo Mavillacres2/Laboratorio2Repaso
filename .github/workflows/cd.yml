@@ -1,0 +1,42 @@
+name: CD - Build and Publish JAR
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Clonar el repositorio
+        uses: actions/checkout@v4
+
+      - name: Configurar Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: gradle
+
+      - name: Dar permisos a Gradle Wrapper
+        run: chmod +x gradlew
+
+      - name: Ejecutar pruebas automatizadas
+        run: ./gradlew test
+
+      - name: Construir proyecto con Gradle
+        run: ./gradlew clean build
+
+      # Opcional pero recomendado: listar outputs para verificar dónde quedó el jar
+      - name: Verificar JAR generado
+        run: ls -la build/libs
+
+      - name: Publicar JAR como artefacto
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-jar
+          path: build/libs/*.jar
+          if-no-files-found: error
+          retention-days: 7
