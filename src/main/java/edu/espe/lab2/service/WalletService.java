@@ -74,7 +74,6 @@ public class WalletService {
         if (wallet.getBalance() < amount) {
             throw new IllegalStateException("Insufficient funds");
         }
-
         wallet.withdraw(amount);
         walletRepository.save(wallet);
         return wallet.getBalance();
